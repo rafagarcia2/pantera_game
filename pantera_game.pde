@@ -1,4 +1,4 @@
-// ETAPA 04 DO PROJETO
+// ETAPA 05 DO PROJETO
 
 // executa apenas uma vez no início do programa 
 void setup(){
@@ -14,13 +14,21 @@ int pers_lar = 75;
 int pers_x = 100;
 int pers_y = 360;
 
+// vidas do Jogador
+int vidas = 3;
+
 //Tamanho carro
 int car_lar = 200;
 int car_alt = 60;
 
 //Tamanho roda
-int roda_lar = 22;
-int roda_alt = 22;
+int roda_lar = 50;
+int roda_alt = 50;
+
+// Vetor com os obstaculos
+int[] obstaculos[] = {{0, 0}, {0, 0},{0, 0},{0, 0},{0, 0},};
+// [[x, y]]
+// [[100, 32], [23, 123], [100, 10]]
 
 // Posicao inicial do obstaculo
  int obs_x = 1280;
@@ -39,17 +47,26 @@ int obs_movimento = 0;
 
 // executada constantemente 
 void draw() {
-  background(#333333);  
-  desenhar_jogardor(pers_x, pers_y, pers_lar, pers_alt);
-  
-  if (tempo >= tempo_aleatorio){ // A partir desse momento o obstaculo comeca a ser desenhado
-    criar_obstaculo();
+  if (vidas > 0){
+    background(#333333);  
+    desenhar_jogardor(pers_x, pers_y, pers_lar, pers_alt);
+    
+    for (int i = 0; i < obstaculos.length; i++){
+        
+    }
+    
+    if (tempo >= tempo_aleatorio){ // A partir desse momento o obstaculo comeca a ser desenhado
+      criar_obstaculo();
+    }
+    
+    desenhar_obstaculo(obs_x, obs_y);
+    obs_movimento+= 4;
+    
+  }else{
+      println("Game Over");  
   }
   
-  desenhar_obstaculo(obs_x, obs_y);
-  
   tempo += 1;
-  obs_movimento+= 4;
 }
 
 void desenhar_jogardor(int posicao_x,int posicao_y, int largura, int altura){
