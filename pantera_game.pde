@@ -1,4 +1,4 @@
-// ETAPA 05 DO PROJETO
+// ETAPA 06 DO PROJETO
 
 // executa apenas uma vez no início do programa 
 void setup(){
@@ -25,21 +25,17 @@ int car_alt = 60;
 int roda_lar = 50;
 int roda_alt = 50;
 
-// Vetor com os obstaculos
-int[] obstaculos[] = {{0, 0}, {0, 0},{0, 0},{0, 0},{0, 0},};
-// [[x, y]]
-// [[100, 32], [23, 123], [100, 10]]
-
 // Posicao inicial do obstaculo
- int obs_x = 1280;
- int obs_y = int(random(30, 690));
+int numero_Obs = 5;
+int[] obs_x = {0,0,0,0,0};
+int[] obs_y = {0,0,0,0,0};
 
 // Tipo de obstaculo
-int tipo_obst = int(random(1, 3));
+int[] tipo_obst = {0,0,0,0,0};
 
 //Tempo do jogo
 int tempo = 0;
-int tempo_aleatorio = int(random(500, 750));
+int tempo_aleatorio = 0;
 
 //movimentacao
 int obs_movimento = 0;
@@ -47,23 +43,35 @@ int obs_movimento = 0;
 
 // executada constantemente 
 void draw() {
+  if (tempo == 0){
+    criar_obstaculo();
+  }
   if (vidas > 0){
     background(#333333);  
     desenhar_jogardor(pers_x, pers_y, pers_lar, pers_alt);
     
-    for (int i = 0; i < obstaculos.length; i++){
-        
-    }
-    
     if (tempo >= tempo_aleatorio){ // A partir desse momento o obstaculo comeca a ser desenhado
       criar_obstaculo();
+      
     }
-    
-    desenhar_obstaculo(obs_x, obs_y);
-    obs_movimento+= 4;
+    for (int i = 0; i < numero_Obs; i++){
+      obs_x[i] -= 4;
+      
+      int a = colisao(obs_x[i], obs_y[i], tipo_obst[i], pers_x, pers_y, pers_lar, pers_alt);
+      desenhar_obstaculo(obs_x[i], obs_y[i], tipo_obst[i]);
+      println(obs_x[i], obs_y[i], tipo_obst[i], pers_x, pers_y, pers_lar, pers_alt);
+      desenhar_obstaculo(obs_x[i], obs_y[i], tipo_obst[i]);
+      if (a == 1){ // Se tocou
+        obs_x[i] = 0;
+        pers_y = 360;
+        
+      }
+    }
+    //obs_movimento+= 4;
     
   }else{
       println("Game Over");  
+      stop();
   }
   
   tempo += 1;
@@ -76,18 +84,23 @@ void desenhar_jogardor(int posicao_x,int posicao_y, int largura, int altura){
 
 void criar_obstaculo(){
   //Funcao destinada a criar a posicao dos obstaculos: 33,33% de carros e 66,67% de rodas. 
-  tempo_aleatorio = int(random(tempo+500, tempo+750));
-  obs_y = int(random(30, 690));
-  tipo_obst = int(random(1, 3));
+  for (int i = 0; i < numero_Obs; i++){
+     obs_y[i] = int(random(30, 690));
+     obs_x[i] = int(random(1500,3000));
+     tipo_obst[i] = int(random(1, 3));
+  }
+  tempo_aleatorio = int(random(tempo+900, tempo+1000));
   obs_movimento = 0;
 }
 
-void desenhar_obstaculo(int posicao_x, int posicao_y){
+void desenhar_obstaculo(int posicao_x, int posicao_y, int tipo_ostaculo){
   //Funcao destinada a desenhar os obstaculos
-  if (tipo_obst == 1){ 
-    carro(posicao_x - obs_movimento, posicao_y);
+  if (tipo_ostaculo == 1){ 
+    //carro(posicao_x - obs_movimento, posicao_y);
+    carro(posicao_x, posicao_y);
   }else{ 
-    roda(posicao_x - obs_movimento, posicao_y);
+    //roda(posicao_x - obs_movimento, posicao_y);
+    roda(posicao_x, posicao_y);
   }
 }
 
@@ -97,6 +110,28 @@ void carro(int posicao_x, int posicao_y){
 
 void roda(int posicao_x, int posicao_y){
   ellipse(posicao_x + (roda_lar/2), posicao_y, roda_lar, roda_alt);
+}
+int colisao(int obs_x, int obs_y, int obs_tipo, int pers_x, int pers_y, int pers_larg, int pers_alt){
+  int obs_larg, obs_alt;  
+  if (obs_tipo == 1){
+      obs_larg = 0;
+      obs_alt = 60;
+    }else{
+      obs_larg = 0;
+      obs_alt = 50;
+    }
+  
+    //if (pers_x < obs_x + obs_larg && pers_x + pers_larg > obs_x &&
+    //pers_y < obs_y + obs_alt && pers_y + pers_alt > obs_y){
+    if ((((pers_x < obs_x) && (obs_x < pers_larg + pers_x)) || 
+    ((obs_x + obs_larg < pers_x + pers_larg) && obs_x + obs_larg > pers_x)) && 
+    (((pers_y < obs_y) && (obs_y < pers_alt + pers_y)) ||
+    ((obs_y + obs_alt < pers_y + pers_alt) && obs_y + obs_alt > pers_y))){
+        // Houve colisão
+        vidas -= 1;
+        return 1;
+    }
+    return 0;
 }
 
 void keyTyped() {
