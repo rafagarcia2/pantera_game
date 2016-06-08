@@ -8,6 +8,8 @@ void setup(){
   stroke(#FFFFFF); // contorno branco
 }
 
+int start =0;
+
 //Posicao inicial e tamanho do jogador
 int pers_alt = 200;
 int pers_lar = 75;
@@ -44,9 +46,18 @@ int obs_movimento = 0;
 // executada constantemente 
 void draw() {
   if (tempo == 0){
+    background(#333333);
+    textSize(40);
+    textAlign(CENTER, CENTER);
+    fill(#ffffff);
+    text("Press 'w' or 's' to start",width/2,height/2);
     criar_obstaculo();
+    criar_obstaculo();
+    if (start == 1){
+      tempo++;
+    }
   }
-  if (vidas > 0){
+  else if (vidas > 0){
     background(#333333);
     desenhar_jogardor(pers_x, pers_y, pers_lar, pers_alt);
     
@@ -55,7 +66,7 @@ void draw() {
       
     }
     for (int i = 0; i < numero_Obs; i++){
-      obs_x[i] -= 4;
+      obs_x[i] -= 4 + (tempo/800); //incrementação de dificuldade :)
       
       int a = colisao(obs_x[i], obs_y[i], tipo_obst[i], pers_x, pers_y, pers_lar, pers_alt);
       desenhar_obstaculo(obs_x[i], obs_y[i], tipo_obst[i]);
@@ -67,7 +78,7 @@ void draw() {
       }
     }
     //obs_movimento+= 4;
-    
+    tempo += 1;
   }else{
       background(#333333);
       textSize(40);
@@ -76,8 +87,6 @@ void draw() {
       text("Game Over",width/2,height/2);
       stop();
   }
-  
-  tempo += 1;
 }
 
 void desenhar_jogardor(int posicao_x,int posicao_y, int largura, int altura){
@@ -147,9 +156,11 @@ void keyTyped() {
   // Função destinada a receber os comandos do teclado
   if (int(key) == 119){ // Key "w"
      pers_y -= 20;
+     start = 1;
   }
   if (int(key) == 115){ // Key "s"
      pers_y += 20;
+     start = 1;
   }
   if (pers_y < pers_alt/2){ // Limitar a teto do jogo
     pers_y = pers_alt/2;
