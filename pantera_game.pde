@@ -161,7 +161,7 @@ void keyTyped() {
 //}
 
 //void keyReleased() {
-//  if (int(key) == 115) {
+//  if (int(key) == 112) {
 //    pers_y = pers_y + (pers_alt/2);
 //    pers_alt = 200;
 //    pers_lar = 75;
