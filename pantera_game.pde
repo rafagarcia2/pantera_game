@@ -47,7 +47,7 @@ void draw() {
     criar_obstaculo();
   }
   if (vidas > 0){
-    background(#333333);  
+    background(#333333);
     desenhar_jogardor(pers_x, pers_y, pers_lar, pers_alt);
     
     if (tempo >= tempo_aleatorio){ // A partir desse momento o obstaculo comeca a ser desenhado
@@ -59,18 +59,21 @@ void draw() {
       
       int a = colisao(obs_x[i], obs_y[i], tipo_obst[i], pers_x, pers_y, pers_lar, pers_alt);
       desenhar_obstaculo(obs_x[i], obs_y[i], tipo_obst[i]);
-      println(obs_x[i], obs_y[i], tipo_obst[i], pers_x, pers_y, pers_lar, pers_alt);
-      desenhar_obstaculo(obs_x[i], obs_y[i], tipo_obst[i]);
+      //println(obs_x[i], obs_y[i], tipo_obst[i], pers_x, pers_y, pers_lar, pers_alt;
       if (a == 1){ // Se tocou
-        obs_x[i] = 0;
-        pers_y = 360;
-        
+        obs_x[i] = -100; 
+        pers_y = 360; // Volta para o meio da tela
+        println("Colição!");
       }
     }
     //obs_movimento+= 4;
     
   }else{
-      println("Game Over");  
+      background(#333333);
+      textSize(40);
+      textAlign(CENTER, CENTER);
+      fill(#ffffff);
+      text("Game Over",width/2,height/2);
       stop();
   }
   
@@ -79,6 +82,8 @@ void draw() {
 
 void desenhar_jogardor(int posicao_x,int posicao_y, int largura, int altura){
   //Funcao destinada a desenhar o personagem
+  fill(#FFFFFF);
+  stroke(#FFFFFF);
   ellipse(posicao_x,posicao_y, largura, altura); // Personagem do Jogo
 }
 
@@ -105,10 +110,14 @@ void desenhar_obstaculo(int posicao_x, int posicao_y, int tipo_ostaculo){
 }
 
 void carro(int posicao_x, int posicao_y){
+  fill(#FF3333);
+  stroke(#FF3333);
   ellipse(posicao_x + (car_lar/2), posicao_y, car_lar, car_alt);
 }
 
 void roda(int posicao_x, int posicao_y){
+  fill(#222222);
+  stroke(#222222);
   ellipse(posicao_x + (roda_lar/2), posicao_y, roda_lar, roda_alt);
 }
 int colisao(int obs_x, int obs_y, int obs_tipo, int pers_x, int pers_y, int pers_larg, int pers_alt){
