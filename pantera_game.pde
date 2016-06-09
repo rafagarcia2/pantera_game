@@ -38,7 +38,7 @@ int[] tipo_obst = {0,0,0,0,0};
 
 //Tempo do jogo
 int tempo = 0;
-int tempo_aleatorio = 0;
+int pontuacao = 0;
 
 //movimentacao
 int obs_movimento = 0;
@@ -60,6 +60,7 @@ void draw() {
     }
   }
   else if (vidas > 0){
+    pontuacao = tempo/60;
     background(#333333);
     desenhar_jogardor(pers_x, pers_y, pers_lar, pers_alt);
     
@@ -68,7 +69,7 @@ void draw() {
       
     //}
     for (int i = 0; i < numero_Obs; i++){
-      if (obs_x[i] < -200){ // A partir desse momento o obstaculo comeca a ser desenhado
+      if (obs_x[i] < -350){ // A partir desse momento o obstaculo comeca a ser desenhado
         criar_obstaculo(i);
       }
       obs_x[i] -= 4 + (tempo/800); //incrementação de dificuldade :)
@@ -81,8 +82,11 @@ void draw() {
         pers_y = 360; // Volta para o meio da tela
         println("Colição!");
       }
+      start = 0;
+      fill(#ffffff);
+      textSize(20);
+      text(("Pontuação: " + pontuacao + "s"), 1100, 30);
     }
-    //obs_movimento+= 4;
     tempo += 1;
   }else{
       background(#333333);
@@ -90,16 +94,31 @@ void draw() {
       textAlign(CENTER, CENTER);
       fill(#ffffff);
       text(("Game Over"), width/2,height/2);
-      textSize(20);
+      textSize(40);
       text(("Pontuação: " + tempo), width/2, 100);
+      
+      if (start == 1){
+        restart();
+      }
   }
+}
+
+void restart(){
+  pers_x = 60;
+  pers_y = 260;
+  vidas = 3;
+  tempo = 1;
+  
+  for (int i = 0; i < numero_Obs; i++){
+     criar_obstaculo(i);
+  } 
 }
 
 void desenhar_jogardor(int posicao_x,int posicao_y, int largura, int altura){
   //Funcao destinada a desenhar o personagem
   fill(#FFFFFF);
   stroke(#FFFFFF);
-  ellipse(posicao_x,posicao_y, largura, altura); // Personagem do Jogo
+  rect(posicao_x,posicao_y, largura, altura); // Personagem do Jogo
 }
 
 void criar_obstaculo(int i){
@@ -107,7 +126,6 @@ void criar_obstaculo(int i){
    obs_y[i] = int(random(30, 690));
    obs_x[i] = int(random(1500,3000));
    tipo_obst[i] = int(random(1, 3));
-   tempo_aleatorio = int(random(tempo+900, tempo+1000));
    obs_movimento = 0;
 }
 
@@ -122,10 +140,11 @@ void desenhar_obstaculo(int posicao_x, int posicao_y, int tipo_ostaculo){
   }
 }
 
+
 void carro(int posicao_x, int posicao_y){
   fill(#FF3333);
   stroke(#FF3333);
-  ellipse(posicao_x + (car_lar/2), posicao_y, car_lar, car_alt);
+  rect(posicao_x + (car_lar/2), posicao_y, car_lar, car_alt);
 }
 
 void roda(int posicao_x, int posicao_y){
@@ -167,11 +186,11 @@ void keyTyped() {
   if (int(key) == 115){ // Key "s"
      pers_y += 20;
   }
-  if (pers_y < pers_alt/2){ // Limitar a teto do jogo
-    pers_y = pers_alt/2;
+  if (pers_y < 0){ // Limitar a teto do jogo
+    pers_y = 0;
   }
-  if (pers_y > 720-(pers_alt/2)){ // Limitar a piso do jogo
-    pers_y = 720-(pers_alt/2);
+  if (pers_y > 720-(pers_alt)){ // Limitar a piso do jogo
+    pers_y = 720-(pers_alt);
   }
 }
 
