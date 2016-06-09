@@ -6,6 +6,7 @@ void setup(){
   background(#333333); // cor do fundo da janela 
   noFill(); // sem preenchimento 
   stroke(#FFFFFF); // contorno branco
+  frameRate(60);
 }
 
 int start =0;
@@ -50,9 +51,10 @@ void draw() {
     textSize(40);
     textAlign(CENTER, CENTER);
     fill(#ffffff);
-    text("Press 'w' or 's' to start",width/2,height/2);
-    criar_obstaculo();
-    criar_obstaculo();
+    text("Press ENTER to start",width/2,height/2);
+    for (int i = 0; i < numero_Obs; i++){
+      criar_obstaculo(i);
+    }
     if (start == 1){
       tempo++;
     }
@@ -61,11 +63,14 @@ void draw() {
     background(#333333);
     desenhar_jogardor(pers_x, pers_y, pers_lar, pers_alt);
     
-    if (tempo >= tempo_aleatorio){ // A partir desse momento o obstaculo comeca a ser desenhado
-      criar_obstaculo();
+    //if (tempo >= tempo_aleatorio){ // A partir desse momento o obstaculo comeca a ser desenhado
+    //  criar_obstaculo();
       
-    }
+    //}
     for (int i = 0; i < numero_Obs; i++){
+      if (obs_x[i] < -200){ // A partir desse momento o obstaculo comeca a ser desenhado
+        criar_obstaculo(i);
+      }
       obs_x[i] -= 4 + (tempo/800); //incrementação de dificuldade :)
       
       int a = colisao(obs_x[i], obs_y[i], tipo_obst[i], pers_x, pers_y, pers_lar, pers_alt);
@@ -81,11 +86,12 @@ void draw() {
     tempo += 1;
   }else{
       background(#333333);
-      textSize(40);
+      textSize(60);
       textAlign(CENTER, CENTER);
       fill(#ffffff);
-      text("Game Over",width/2,height/2);
-      stop();
+      text(("Game Over"), width/2,height/2);
+      textSize(20);
+      text(("Pontuação: " + tempo), width/2, 100);
   }
 }
 
@@ -96,15 +102,13 @@ void desenhar_jogardor(int posicao_x,int posicao_y, int largura, int altura){
   ellipse(posicao_x,posicao_y, largura, altura); // Personagem do Jogo
 }
 
-void criar_obstaculo(){
-  //Funcao destinada a criar a posicao dos obstaculos: 33,33% de carros e 66,67% de rodas. 
-  for (int i = 0; i < numero_Obs; i++){
-     obs_y[i] = int(random(30, 690));
-     obs_x[i] = int(random(1500,3000));
-     tipo_obst[i] = int(random(1, 3));
-  }
-  tempo_aleatorio = int(random(tempo+900, tempo+1000));
-  obs_movimento = 0;
+void criar_obstaculo(int i){
+  //Funcao destinada a criar a posicao dos obstaculos: 33,33% de carros e 66,67% de rodas. {
+   obs_y[i] = int(random(30, 690));
+   obs_x[i] = int(random(1500,3000));
+   tipo_obst[i] = int(random(1, 3));
+   tempo_aleatorio = int(random(tempo+900, tempo+1000));
+   obs_movimento = 0;
 }
 
 void desenhar_obstaculo(int posicao_x, int posicao_y, int tipo_ostaculo){
@@ -154,13 +158,14 @@ int colisao(int obs_x, int obs_y, int obs_tipo, int pers_x, int pers_y, int pers
 
 void keyTyped() {
   // Função destinada a receber os comandos do teclado
+  if (int(key) == 10){ // Key enter
+     start = 1;
+  }
   if (int(key) == 119){ // Key "w"
      pers_y -= 20;
-     start = 1;
   }
   if (int(key) == 115){ // Key "s"
      pers_y += 20;
-     start = 1;
   }
   if (pers_y < pers_alt/2){ // Limitar a teto do jogo
     pers_y = pers_alt/2;
