@@ -1,7 +1,7 @@
 // ETAPA 06 DO PROJETO
 
 // executa apenas uma vez no início do programa 
-PImage img, bg, car, wheel;
+PImage img, bg, car, wheel, jump, down;
 
 void setup(){
   size (1280,720);  // tamanho da janela 
@@ -13,12 +13,15 @@ void setup(){
   bg = loadImage("imagens/bg.png");
   car = loadImage("imagens/car.png");
   wheel = loadImage("imagens/wheel.png");
+  jump = loadImage("imagens/jump.png");
+  down = loadImage("imagens/down.png");
 }
 
 int start =0;
 int dificuldade = 0;
 int vel_inicial = 0;
 int pular = 0;
+int baixar = 0;
 int vel_pulo = -3;
 
 //Posicao inicial e tamanho do jogador
@@ -26,6 +29,7 @@ int pers_alt = 120;
 int pers_lar = 60;
 int pers_x = 100-pers_lar/2;
 int pers_y = 360-pers_alt/2;
+
 
 // vidas do Jogador
 int vidas = 3;
@@ -54,7 +58,7 @@ int tempoReal= 0;
 int obs_movimento = 0;
 //int pers_movimento = 0;
 
-int salto = 0;
+
 // executada constantemente 
 void draw() {
   if (tempo == 0){
@@ -74,6 +78,7 @@ void draw() {
     }
     if (dificuldade == 1){
       vel_inicial = 4;
+      
     }
     if (dificuldade == 2){
       vel_inicial = 7;
@@ -111,7 +116,7 @@ void draw() {
       if (a == 1){ // Se tocou
         criar_obstaculo(i); 
         pers_y = 360-pers_alt/2; // Volta para o meio da tela
-        println("Colição!");
+        println("Colisão!");
       }
     }
     tempo += 1;
@@ -151,6 +156,7 @@ void restart(){
   vidas = 3;
   tempo = 1;
   pular = 0;
+  baixar = 0;
   pontuacao = 0;
   
   for (int i = 0; i < numero_Obs; i++){
@@ -172,7 +178,17 @@ void desenhar_jogardor(int posicao_x,int posicao_y, int pers_lar, int pers_alt){
   fill(#FFFFFF);
   stroke(#FFFFFF);
   //rect(posicao_x,posicao_y, largura, altura); // Personagem do Jogo
-  image(img, posicao_x, posicao_y);
+  if(pular == 1){
+    image(jump, posicao_x, posicao_y);}
+  
+  else{
+    if(baixar == 1){image(down, posicao_x, posicao_y);
+    }
+    else{image(img, posicao_x, posicao_y);
+    }
+  }
+    
+    
 }
 
 void criar_obstaculo(int i){
@@ -236,6 +252,7 @@ void keyTyped() {
   if (int(key) == 49){ // Key 1
      start = 1;
      dificuldade = 1;
+     
   }
   if (int(key) == 50){ // Key 2
      start = 1;
@@ -248,9 +265,11 @@ void keyTyped() {
   if (int(key) == 119){ // Key "w"
      pers_y -= 20;
      pular = 1;
+     baixar = 0;
   }
   if (int(key) == 115){ // Key "s"
      pers_y += 20;
+     baixar = 1;
   }
   if (pers_y < 0){ // Limitar a teto do jogo
     pers_y = 0;
