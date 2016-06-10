@@ -1,21 +1,31 @@
 // ETAPA 06 DO PROJETO
 
 // executa apenas uma vez no início do programa 
+PImage img, bg, car, wheel;
+
 void setup(){
   size (1280,720);  // tamanho da janela 
   background(#333333); // cor do fundo da janela 
   noFill(); // sem preenchimento 
   stroke(#FFFFFF); // contorno branco
   frameRate(60);
+  img = loadImage("imagens/panther.png");
+  bg = loadImage("imagens/bg.png");
+  car = loadImage("imagens/car.png");
+  wheel = loadImage("imagens/wheel.png");
 }
 
 int start =0;
+int dificuldade = 0;
+int vel_inicial = 0;
+int pular = 0;
+int vel_pulo = -3;
 
 //Posicao inicial e tamanho do jogador
-int pers_alt = 200;
-int pers_lar = 75;
-int pers_x = 100;
-int pers_y = 360;
+int pers_alt = 120;
+int pers_lar = 60;
+int pers_x = 100-pers_lar/2;
+int pers_y = 360-pers_alt/2;
 
 // vidas do Jogador
 int vidas = 3;
@@ -39,11 +49,12 @@ int[] tipo_obst = {0,0,0,0,0};
 //Tempo do jogo
 int tempo = 0;
 int pontuacao = 0;
-
+int tempoReal= 0;
 //movimentacao
 int obs_movimento = 0;
 //int pers_movimento = 0;
 
+int salto = 0;
 // executada constantemente 
 void draw() {
   if (tempo == 0){
@@ -51,51 +62,82 @@ void draw() {
     textSize(40);
     textAlign(CENTER, CENTER);
     fill(#ffffff);
-    text("Press ENTER to start",width/2,height/2);
+    text("Choose Difficulty:",width/2,75);
+    text("1. Easy",width/2,150);
+    text("2. Normal",width/2,200);
+    text("3. Hard",width/2,250);
     for (int i = 0; i < numero_Obs; i++){
       criar_obstaculo(i);
     }
     if (start == 1){
       tempo++;
     }
+    if (dificuldade == 1){
+      vel_inicial = 4;
+    }
+    if (dificuldade == 2){
+      vel_inicial = 7;
+    }    
+    if (dificuldade == 3){
+      vel_inicial = 10;
+    }
   }
   else if (vidas > 0){
     pontuacao = tempo/60;
-    background(#333333);
+    background(bg);
     desenhar_jogardor(pers_x, pers_y, pers_lar, pers_alt);
-    
-    //if (tempo >= tempo_aleatorio){ // A partir desse momento o obstaculo comeca a ser desenhado
-    //  criar_obstaculo();
-      
-    //}
+    if (pular == 1){
+      pers_y += vel_pulo;
+      println(pers_y);
+      if (pers_y < 50){
+        vel_pulo = 3;
+      }
+      if (pers_y >= 360-pers_alt/2){
+        pular = 0;
+        vel_pulo = -4;
+      }
+    }
+    desenhar_jogardor(pers_x, pers_y, pers_lar, pers_alt);
     for (int i = 0; i < numero_Obs; i++){
       if (obs_x[i] < -350){ // A partir desse momento o obstaculo comeca a ser desenhado
         criar_obstaculo(i);
+        pontuacao++;
       }
-      obs_x[i] -= 4 + (tempo/800); //incrementação de dificuldade :)
+      obs_x[i] -= vel_inicial + (tempo/800); //incrementação de dificuldade :)
       
       int a = colisao(obs_x[i], obs_y[i], tipo_obst[i], pers_x, pers_y, pers_lar, pers_alt);
       desenhar_obstaculo(obs_x[i], obs_y[i], tipo_obst[i]);
       //println(obs_x[i], obs_y[i], tipo_obst[i], pers_x, pers_y, pers_lar, pers_alt;
       if (a == 1){ // Se tocou
-        obs_x[i] = -100; 
-        pers_y = 360; // Volta para o meio da tela
+        criar_obstaculo(i); 
+        pers_y = 360-pers_alt/2; // Volta para o meio da tela
         println("Colição!");
       }
-      start = 0;
-      fill(#ffffff);
-      textSize(20);
-      text(("Pontuação: " + pontuacao + "s"), 1100, 30);
     }
     tempo += 1;
+    tempoReal = tempo/60;
+    
+    fill(#ffffff);
+    textSize(20);
+    text(("Pontuação: " + pontuacao), 1100, 30);
+    text(("vida: " + vidas), width/2, 30);
+    text(("Tempo: " + tempoReal + "s"), 180, 30);
+    start = 0;
+    dificuldade = 0;
   }else{
       background(#333333);
-      textSize(60);
+      textSize(80);
       textAlign(CENTER, CENTER);
       fill(#ffffff);
       text(("Game Over"), width/2,height/2);
+      textSize(33);
+      text("Choose Difficulty:",width/2,450);
+      text("1. Easy",width/2,525);
+      text("2. Normal",width/2,575);
+      text("3. Hard",width/2, 625);
       textSize(40);
-      text(("Pontuação: " + tempo), width/2, 100);
+      text(("Pontuação: " + pontuacao), width/2, 40);
+      text(("Tempo: " + tempoReal + "s"), width/2, 100);
       
       if (start == 1){
         restart();
@@ -104,21 +146,33 @@ void draw() {
 }
 
 void restart(){
-  pers_x = 60;
-  pers_y = 260;
+  pers_y = 100-pers_lar/2;
+  pers_y = 360-pers_alt/2;
   vidas = 3;
   tempo = 1;
+  pular = 0;
+  pontuacao = 0;
   
   for (int i = 0; i < numero_Obs; i++){
      criar_obstaculo(i);
-  } 
+  }
+  if (dificuldade == 1){
+    vel_inicial = 4;
+  }
+  if (dificuldade == 2){
+    vel_inicial = 7;
+  }    
+  if (dificuldade == 3){
+    vel_inicial = 10;
+  }
 }
 
-void desenhar_jogardor(int posicao_x,int posicao_y, int largura, int altura){
+void desenhar_jogardor(int posicao_x,int posicao_y, int pers_lar, int pers_alt){
   //Funcao destinada a desenhar o personagem
   fill(#FFFFFF);
   stroke(#FFFFFF);
-  rect(posicao_x,posicao_y, largura, altura); // Personagem do Jogo
+  //rect(posicao_x,posicao_y, largura, altura); // Personagem do Jogo
+  image(img, posicao_x, posicao_y);
 }
 
 void criar_obstaculo(int i){
@@ -144,13 +198,15 @@ void desenhar_obstaculo(int posicao_x, int posicao_y, int tipo_ostaculo){
 void carro(int posicao_x, int posicao_y){
   fill(#FF3333);
   stroke(#FF3333);
-  rect(posicao_x + (car_lar/2), posicao_y, car_lar, car_alt);
+  //rect(posicao_x + (car_lar/2), posicao_y, car_lar, car_alt);
+  image(car, posicao_x, posicao_y);
 }
 
 void roda(int posicao_x, int posicao_y){
   fill(#222222);
   stroke(#222222);
-  ellipse(posicao_x + (roda_lar/2), posicao_y, roda_lar, roda_alt);
+  //ellipse(posicao_x + (roda_lar/2), posicao_y, roda_lar, roda_alt);
+  image(wheel, posicao_x, posicao_y);
 }
 int colisao(int obs_x, int obs_y, int obs_tipo, int pers_x, int pers_y, int pers_larg, int pers_alt){
   int obs_larg, obs_alt;  
@@ -177,11 +233,21 @@ int colisao(int obs_x, int obs_y, int obs_tipo, int pers_x, int pers_y, int pers
 
 void keyTyped() {
   // Função destinada a receber os comandos do teclado
-  if (int(key) == 10){ // Key enter
+  if (int(key) == 49){ // Key 1
      start = 1;
+     dificuldade = 1;
+  }
+  if (int(key) == 50){ // Key 2
+     start = 1;
+     dificuldade = 2;
+  }
+  if (int(key) == 51){ // Key 3
+     start = 1;
+     dificuldade = 3;
   }
   if (int(key) == 119){ // Key "w"
      pers_y -= 20;
+     pular = 1;
   }
   if (int(key) == 115){ // Key "s"
      pers_y += 20;
@@ -193,6 +259,17 @@ void keyTyped() {
     pers_y = 720-(pers_alt);
   }
 }
+
+//void pular(){
+  //while(pers_y >= 340){
+  //  pers_y -= 20;
+  //}
+  //while(pers_y <= 440){
+  //  pers_y += 20;
+  //}
+  //if(tempo
+//}
+
 
 //void keyPressed() {
 //  if (int(key) == 115) {
