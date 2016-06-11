@@ -1,4 +1,4 @@
-// ETAPA 06 DO PROJETO
+// ETAPA FINAL DO PROJETO
 
 // executa apenas uma vez no início do programa 
 PImage img, bg, car, wheel, jump, down;
@@ -22,7 +22,7 @@ int dificuldade = 0;
 int vel_inicial = 0;
 int pular = 0;
 int baixar = 0;
-int vel_pulo = -3;
+int vel_pulo = -4;
 
 //Posicao inicial e tamanho do jogador
 int pers_alt = 120;
@@ -43,7 +43,7 @@ int roda_lar = 50;
 int roda_alt = 50;
 
 // Posicao inicial do obstaculo
-int numero_Obs = 5;
+int numero_Obs = 4;
 int[] obs_x = {0,0,0,0,0};
 int[] obs_y = {0,0,0,0,0};
 
@@ -63,13 +63,14 @@ int obs_movimento = 0;
 void draw() {
   if (tempo == 0){
     background(#333333);
-    textSize(40);
+    textSize(70);
     textAlign(CENTER, CENTER);
     fill(#ffffff);
-    text("Choose Difficulty:",width/2,75);
-    text("1. Easy",width/2,150);
-    text("2. Normal",width/2,200);
-    text("3. Hard",width/2,250);
+    text("Choose Difficulty:",width/2,200);
+    textSize(45);
+    text("1. Easy",width/2,300);
+    text("2. Normal",width/2,350);
+    text("3. Hard",width/2,400);
     for (int i = 0; i < numero_Obs; i++){
       criar_obstaculo(i);
     }
@@ -88,14 +89,13 @@ void draw() {
     }
   }
   else if (vidas > 0){
-    pontuacao = tempo/60;
     background(bg);
     desenhar_jogardor(pers_x, pers_y, pers_lar, pers_alt);
     if (pular == 1){
       pers_y += vel_pulo;
       println(pers_y);
       if (pers_y < 50){
-        vel_pulo = 3;
+        vel_pulo = 4;
       }
       if (pers_y >= 360-pers_alt/2){
         pular = 0;
@@ -124,9 +124,9 @@ void draw() {
     
     fill(#ffffff);
     textSize(20);
-    text(("Pontuação: " + pontuacao), 1100, 30);
-    text(("vida: " + vidas), width/2, 30);
-    text(("Tempo: " + tempoReal + "s"), 180, 30);
+    text(("Pontuação: " + pontuacao), 1100, 25);
+    text(("Vidas: " + vidas), width/2, 25);
+    text(("Tempo: " + tempoReal + "s"), 180, 25);
     start = 0;
     dificuldade = 0;
   }else{
@@ -193,10 +193,14 @@ void desenhar_jogardor(int posicao_x,int posicao_y, int pers_lar, int pers_alt){
 
 void criar_obstaculo(int i){
   //Funcao destinada a criar a posicao dos obstaculos: 33,33% de carros e 66,67% de rodas. {
-   obs_y[i] = int(random(30, 690));
+   //obs_y[i] = int(random(30, 690));
    obs_x[i] = int(random(1500,3000));
    tipo_obst[i] = int(random(1, 3));
-   obs_movimento = 0;
+   if (tipo_obst[i] == 1){ 
+    obs_y[i] = 400;
+  }else{ 
+    obs_y[i] = 300;
+  }
 }
 
 void desenhar_obstaculo(int posicao_x, int posicao_y, int tipo_ostaculo){
@@ -267,10 +271,10 @@ void keyTyped() {
      pular = 1;
      baixar = 0;
   }
-  if (int(key) == 115){ // Key "s"
-     pers_y += 20;
-     baixar = 1;
-  }
+  //if (int(key) == 115){ // Key "s"
+  //   pers_y += 20;
+     
+  //}
   if (pers_y < 0){ // Limitar a teto do jogo
     pers_y = 0;
   }
@@ -290,21 +294,27 @@ void keyTyped() {
 //}
 
 
-//void keyPressed() {
-//  if (int(key) == 115) {
-//    pers_y = pers_y + (pers_alt/2);
-//    pers_alt = 100;
-//    pers_lar = 150;
-//    pers_y = pers_y - (pers_alt/2);
-    
-//  }
-//}
+void keyPressed() {
+  
+ if (int(key) == 115) {
+   if (pular != 1){
+     pers_y = 400;
+     pers_alt = 100;
+     pers_lar = 150;
+     baixar = 1;
+   
+   }
+ }
+}
 
-//void keyReleased() {
-//  if (int(key) == 112) {
-//    pers_y = pers_y + (pers_alt/2);
-//    pers_alt = 200;
-//    pers_lar = 75;
-//    pers_y = pers_y - (pers_alt/2);
-//  }
-//}
+void keyReleased() {
+ if (int(key) == 115) {
+   if (pular != 1){
+     pers_y = 360-pers_alt/2;
+     pers_alt = 120;
+     pers_lar = 60;
+     baixar = 0;
+   }
+   
+ }
+}
