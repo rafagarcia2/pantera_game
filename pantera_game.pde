@@ -1,7 +1,7 @@
 // ETAPA FINAL DO PROJETO
 
 // executa apenas uma vez no início do programa 
-PImage img, bg, car, wheel, jump, down;
+PImage img, bg, car, carcrash, wheel, wheelcrash, jump, down;
 
 void setup(){
   size (1280,720);  // tamanho da janela 
@@ -15,6 +15,8 @@ void setup(){
   wheel = loadImage("imagens/wheel.png");
   jump = loadImage("imagens/jump.png");
   down = loadImage("imagens/down.png");
+  carcrash = loadImage("imagens/carcrash.png");
+  wheelcrash = loadImage("imagens/wheelcrash.png");
 }
 
 int start =0;
@@ -22,7 +24,7 @@ int dificuldade = 0;
 int vel_inicial = 0;
 int pular = 0;
 int baixar = 0;
-int vel_pulo = -4;
+int vel_pulo = -8;
 
 //Posicao inicial e tamanho do jogador
 int pers_alt = 120;
@@ -66,16 +68,17 @@ void draw() {
     textSize(70);
     textAlign(CENTER, CENTER);
     fill(#ffffff);
-    text("Choose Difficulty:",width/2,200);
+    text("Black Panther: The videogame",width/2,120);
+    text("Choose Difficulty:",width/2,250);
     textSize(45);
-    text("1. Easy",width/2,300);
-    text("2. Normal",width/2,350);
-    text("3. Hard",width/2,400);
-    for (int i = 0; i < numero_Obs; i++){
-      criar_obstaculo(i);
-    }
+    text("1. Easy",width/2,400);
+    text("2. Normal",width/2,450);
+    text("3. Hard",width/2,500);
     if (start == 1){
       tempo++;
+      for (int i = 0; i < numero_Obs; i++){
+        criar_obstaculo(i);
+      }
     }
     if (dificuldade == 1){
       vel_inicial = 4;
@@ -85,7 +88,7 @@ void draw() {
       vel_inicial = 7;
     }    
     if (dificuldade == 3){
-      vel_inicial = 10;
+      vel_inicial = 8;
     }
   }
   else if (vidas > 0){
@@ -95,11 +98,11 @@ void draw() {
       pers_y += vel_pulo;
       println(pers_y);
       if (pers_y < 50){
-        vel_pulo = 4;
+        vel_pulo = 10;
       }
       if (pers_y >= 360-pers_alt/2){
         pular = 0;
-        vel_pulo = -4;
+        vel_pulo = -8;
       }
     }
     desenhar_jogardor(pers_x, pers_y, pers_lar, pers_alt);
@@ -114,6 +117,11 @@ void draw() {
       desenhar_obstaculo(obs_x[i], obs_y[i], tipo_obst[i]);
       //println(obs_x[i], obs_y[i], tipo_obst[i], pers_x, pers_y, pers_lar, pers_alt;
       if (a == 1){ // Se tocou
+        if (tipo_obst[i] < 4){
+          image(carcrash, obs_x[i], obs_y[i]);
+        } else{
+          image(wheelcrash, obs_x[i], obs_y[i]);
+        }
         criar_obstaculo(i); 
         pers_y = 360-pers_alt/2; // Volta para o meio da tela
         println("Colisão!");
@@ -136,13 +144,13 @@ void draw() {
       fill(#ffffff);
       text(("Game Over"), width/2,height/2);
       textSize(33);
-      text("Choose Difficulty:",width/2,450);
+      text("For Restart: choose difficulty:",width/2,450);
       text("1. Easy",width/2,525);
       text("2. Normal",width/2,575);
       text("3. Hard",width/2, 625);
-      textSize(40);
-      text(("Pontuação: " + pontuacao), width/2, 40);
-      text(("Tempo: " + tempoReal + "s"), width/2, 100);
+      textSize(60);
+      text(("Pontuação: " + pontuacao), width/2, 100);
+      text(("Tempo: " + tempoReal + "s"), width/2, 150);
       
       if (start == 1){
         restart();
@@ -151,7 +159,7 @@ void draw() {
 }
 
 void restart(){
-  pers_y = 100-pers_lar/2;
+  pers_x = 100-pers_lar/2;
   pers_y = 360-pers_alt/2;
   vidas = 3;
   tempo = 1;
@@ -194,9 +202,16 @@ void desenhar_jogardor(int posicao_x,int posicao_y, int pers_lar, int pers_alt){
 void criar_obstaculo(int i){
   //Funcao destinada a criar a posicao dos obstaculos: 33,33% de carros e 66,67% de rodas. {
    //obs_y[i] = int(random(30, 690));
-   obs_x[i] = int(random(1500,3000));
-   tipo_obst[i] = int(random(1, 3));
-   if (tipo_obst[i] == 1){ 
+   int maisdistante = 1280;
+   for (int j = 0; j < numero_Obs; j++){
+     if (obs_x[j] > maisdistante){
+       maisdistante = obs_x[j];
+     }
+   }
+   obs_x[i] = int(random(maisdistante+500,maisdistante+1200));
+   println(obs_x[i]);
+   tipo_obst[i] = int(random(1, 6));
+   if (tipo_obst[i] <= 4){
     obs_y[i] = 400;
   }else{ 
     obs_y[i] = 300;
@@ -205,7 +220,7 @@ void criar_obstaculo(int i){
 
 void desenhar_obstaculo(int posicao_x, int posicao_y, int tipo_ostaculo){
   //Funcao destinada a desenhar os obstaculos
-  if (tipo_ostaculo == 1){ 
+  if (tipo_ostaculo <= 4){ 
     //carro(posicao_x - obs_movimento, posicao_y);
     carro(posicao_x, posicao_y);
   }else{ 
